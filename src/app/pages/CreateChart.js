@@ -9,19 +9,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogSubtitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TrendingUp } from "lucide-react";
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
 import {
   Table,
   TableBody,
@@ -50,96 +42,41 @@ export function CreateChart() {
   });
 
   const [dataSaved, setDataSaved] = useState(false);
+  const [chartData, setChartData] = useState([]); // Step 1: State for chartData
+  const [chartTitle, setChartTitle] = useState("");
+  const [xAxisTitle, setXAxisTitle] = useState("");
+  const [yAxisTitle, setYAxisTitle] = useState("");
 
   function saveValues(e) {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.id]: e.target.value,
     }));
-
-    // setFormData(formData[e.target.id], e.target.value);
-
-    // setFormData(formData[e.target.id], e.target.value);
-
-    console.log(formData);
   }
-
-  window.chartData = [];
-  let chartTitle;
-  let chartJSX;
-  let chartConfig = {};
 
   function releaseValues() {
     console.log("FORM DATA", formData);
-    let xAxisTitle = formData.xAxisName;
-    let yAxisTitle = formData.yAxisName;
-    chartTitle = formData.chartTitle;
+    const newChartData = [];
 
-    delete formData.xAxisName;
-    delete formData.yAxisName;
-    delete formData.chartTitle;
+    for (let i = 1; i <= 4; i++) {
+      const xValue = formData[`xVal${i}`];
+      const yValue = formData[`yVal${i}`];
 
-    const formDataKeys = Object.keys(formData);
-
-    for (let i = 1; i < formDataKeys.length / 2; i++) {
-      const xValue = formData["xVal" + i.toString()];
-      const yValue = formData["yVal" + i.toString()];
-
-      window.chartData.push({
-        [xAxisTitle]: xValue,
-        [yAxisTitle]: parseInt(yValue),
-      });
-      // i++;
-      chartConfig = {
-        Month: {
-          label: "Month",
-          color: "#2563eb",
-        },
-        Sales: {
-          label: "Sales",
-          color: "#60a5fa",
-        },
-      };
+      if (xValue && yValue) {
+        debugger;
+        newChartData.push({
+          [formData.xAxisName]: xValue,
+          [formData.yAxisName]: parseInt(yValue),
+        });
+      }
     }
 
+    setChartData(newChartData);
+    setXAxisTitle(formData.xAxisName);
+    setYAxisTitle(formData.yAxisName);
+    setChartTitle(formData.chartName);
     setDataSaved(true);
-
-    chartTitle = formData.chartTitle;
-    console.log("CHART DATA", window.chartData);
-    chartJSX = (
-      <div>
-        <h2 className="text-lg">{chartTitle}</h2>
-        <ChartContainer config={chartConfig} width="100%" height="100%">
-          <LineChart
-            // accessibilityLayer
-            data={window.chartData}
-            // margin={{
-            //   left: 12,
-            //   right: 12,
-            // }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              tickLine={true}
-              axisLine={true}
-              tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Line
-              dataKey="desktop"
-              type="natural"
-              stroke="var(--color-desktop)"
-              strokeWidth={2}
-              dot={true}
-            />
-          </LineChart>
-        </ChartContainer>
-      </div>
-    );
+    console.log("CHART DATA", newChartData);
   }
 
   return (
@@ -165,13 +102,12 @@ export function CreateChart() {
                   Enter your values below in the table. Include the names of the
                   x and y axes (limit of 8 values)
                 </p>
-                <Table className="">
+                <Table>
                   <TableCaption>{chartTitle} values</TableCaption>
                   <TableHeader>
                     <TableRow>
                       <TableHead>
                         <Input
-                          name="name"
                           id="xAxisName"
                           type="text"
                           placeholder="X-axis title"
@@ -180,7 +116,6 @@ export function CreateChart() {
                       </TableHead>
                       <TableHead>
                         <Input
-                          name="name"
                           id="yAxisName"
                           type="text"
                           placeholder="Y-axis title"
@@ -190,78 +125,24 @@ export function CreateChart() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    <TableRow>
-                      <TableCell className="">
-                        <Input
-                          name="name"
-                          id="xVal1"
-                          placeholder="Value"
-                          onChange={saveValues}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          name="name"
-                          id="yVal1"
-                          placeholder="Value"
-                          onChange={saveValues}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="">
-                        <Input
-                          name="name"
-                          id="xVal2"
-                          placeholder="Value"
-                          onChange={saveValues}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          name="name"
-                          id="yVal2"
-                          placeholder="Value"
-                          onChange={saveValues}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="">
-                        <Input
-                          name="name"
-                          id="xVal3"
-                          placeholder="Value"
-                          onChange={saveValues}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          name="name"
-                          id="yVal3"
-                          placeholder="Value"
-                          onChange={saveValues}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="">
-                        <Input
-                          name="name"
-                          id="xVal4"
-                          placeholder="Value"
-                          onChange={saveValues}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          name="name"
-                          id="yVal4"
-                          placeholder="Value"
-                          onChange={saveValues}
-                        />
-                      </TableCell>
-                    </TableRow>
+                    {[...Array(4)].map((_, i) => (
+                      <TableRow key={i}>
+                        <TableCell>
+                          <Input
+                            id={`xVal${i + 1}`}
+                            placeholder="Value"
+                            onChange={saveValues}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Input
+                            id={`yVal${i + 1}`}
+                            placeholder="Value"
+                            onChange={saveValues}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </form>
@@ -275,7 +156,14 @@ export function CreateChart() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      {dataSaved && <ChartRender chartData={window.chartData} />}
+      {dataSaved && (
+        <ChartRender
+          chartData={chartData}
+          chartTitle={chartTitle}
+          xAxisTitle={xAxisTitle}
+          yAxisTitle={yAxisTitle}
+        />
+      )}
     </div>
   );
 }
